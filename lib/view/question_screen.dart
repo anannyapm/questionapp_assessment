@@ -46,7 +46,7 @@ class QuestionScreen extends StatelessWidget {
                             ...List.generate(
                                 model.questionLength,
                                 (index) => SlideNavigator(
-                                      isActive: index == navModel.currentPage,
+                                      isActive: index == navModel.barNavigator,
                                     )),
                           ],
                         ),
@@ -77,7 +77,7 @@ class QuestionScreen extends StatelessWidget {
                                   questionKey: model
                                       .questionsField[navModel.currentPage]
                                       .schema
-                                      .name)
+                                      .label)
                             else if (model.questionsField[navModel.currentPage]
                                     .type ==
                                 'Section')
@@ -88,8 +88,8 @@ class QuestionScreen extends StatelessWidget {
                             else if (model.questionsField[navModel.currentPage]
                                         .type ==
                                     'SingleSelect' &&
-                                model.userAnswers['typeOFLoan'] ==
-                                    'balance-transfer-top-up')
+                                model.userAnswers['Type of loan'] ==
+                                    'Balance transfer & Top-up')
                               DropDownWidget(
                                   questionSchema: model
                                       .questionsField[navModel.currentPage]
@@ -103,16 +103,17 @@ class QuestionScreen extends StatelessWidget {
                             InkWell(
                               onTap: () {
                                 if (navModel.currentPage > 0) {
-                                   if (model.questionsField[navModel.currentPage-1]
+                                  if (model
+                                              .questionsField[
+                                                  navModel.currentPage - 1]
                                               .type ==
                                           'SingleSelect' &&
                                       model.showQuestion == false) {
-                                 
-
                                     navModel.currentPage--;
                                     navModel.moveBackwards();
-                                  } else
-                                  navModel.moveBackwards();
+                                  } else {
+                                    navModel.moveBackwards();
+                                  }
                                 }
                               },
                               child: Row(
@@ -142,16 +143,18 @@ class QuestionScreen extends StatelessWidget {
                               onPressed: () {
                                 if (navModel.currentPage <
                                     model.questionsField.length - 1) {
-                                  if (model.questionsField[navModel.currentPage+1]
+                                  model.setUserAnswer(/* value, questionKey */);
+                                  if (model
+                                              .questionsField[
+                                                  navModel.currentPage + 1]
                                               .type ==
                                           'SingleSelect' &&
                                       model.showQuestion == false) {
-                                 
-
                                     navModel.currentPage++;
                                     navModel.moveForward();
-                                  } else
+                                  } else {
                                     navModel.moveForward();
+                                  }
                                 }
                               },
                               icon: const Icon(Icons.keyboard_arrow_right),
@@ -173,7 +176,6 @@ class SingleChoiceSelector extends StatelessWidget {
     required this.model,
     required this.questionKey,
   });
-
   final QuestionField questionData;
   final AppViewModel model;
   final String questionKey;
@@ -181,6 +183,15 @@ class SingleChoiceSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = questionData.schema.options;
+    if (!model.userAnswers.containsKey(questionKey)) {
+      model.qKey = questionKey;
+      model.qValue = data?[0].value;
+    } else {
+      model.qKey = questionKey;
+      model.qValue = model.userAnswers[questionKey];
+    }
+    log(model.userAnswers.toString());
+
     return data == null
         ? Container()
         : ListView.separated(
@@ -188,7 +199,7 @@ class SingleChoiceSelector extends StatelessWidget {
             itemCount: data.length,
             itemBuilder: (context, index) {
               final option = data[index];
-              final optionKey = option.key;
+              final optionKey = option.value;
               return Container(
                 decoration: BoxDecoration(
                   border: Border.all(
@@ -202,11 +213,16 @@ class SingleChoiceSelector extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Radio(
+                      autofocus: true,
                       activeColor: kOrange,
                       value: optionKey,
-                      groupValue: model.userAnswers[questionKey],
+                      groupValue: model.userAnswers.containsKey(questionKey)
+                          ? model.userAnswers[questionKey]
+                          : data[0].value,
                       onChanged: (value) {
-                        model.setUserAnswer(value, questionKey);
+                        model.qKey = questionKey;
+                        model.qValue = value;
+                        model.setUserAnswer();
                       },
                     ),
                     CustomText(

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:question_app/model/question_model.dart';
+import 'package:question_app/view/constants/color_constants.dart';
 import 'package:question_app/view/widgets/dropdown_widget.dart';
+import 'package:question_app/viewmodel/app_viewmodel.dart';
+
+import 'custom_text.dart';
 
 class SectionWidget extends StatelessWidget {
   final QuestionField questionField;
@@ -12,32 +17,13 @@ class SectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Extract data from the sectionData map
-    String sectionName = questionField.schema.name;
-    String sectionLabel = questionField.schema.label;
     List<SubField> fields = questionField.schema.fields ?? [];
 
-    return Container(
-      margin: EdgeInsets.all(16.0),
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            sectionLabel,
-            style: TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 12.0),
-          for (var field in fields) FieldWidget(fieldData: field),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var field in fields) FieldWidget(fieldData: field),
+      ],
     );
   }
 }
@@ -49,31 +35,49 @@ class FieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Extract data from the fieldData map
-    String fieldName = fieldData.schema.name;
+    final model = Provider.of<AppViewModel>(context);
+    if (fieldData.type == 'Numeric') {
+      model.qKey = fieldData.schema.label;
+
+      if (!model.userAnswers.containsKey(fieldData.schema.label)) {
+        model.qValue = '0';
+      } else {
+        model.qValue = model.userAnswers[fieldData.schema.label];
+        
+      }
+        model.incomeController.text = model.qValue.toString();
+
+    }
+
     String fieldLabel = fieldData.schema.label;
 
     return Column(
       children: [
-       
-
         if (fieldData.type == 'Numeric')
           TextFormField(
-            decoration: InputDecoration(labelText: fieldLabel),
+            controller: model.incomeController,
+            focusNode: FocusNode(),
+            decoration: InputDecoration(
+                labelText: fieldLabel, border: const OutlineInputBorder()),
             keyboardType: TextInputType.number,
-            // You can add logic here to handle numeric input.
+            onChanged: (value) {
+              model.qValue = value;
+            },
+
+            // onFieldSubmitted:(val)=> Provider.of<AppViewModel>(context,listen: false)
+            //     .setUserAnswer(val, fieldData.schema.name),
           )
         else if (fieldData.type == 'Label')
-          Text(
-            fieldLabel,
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: CustomText(
+              text: "**$fieldLabel",
+              color: kWarning,
             ),
           )
-        else if(fieldData.type=='SingleSelect')
-        DropDownWidget(questionSchema: fieldData.schema)
-       // Handle other field types as needed
+        else if (fieldData.type == 'SingleSelect')
+          DropDownWidget(questionSchema: fieldData.schema)
+        // Handle other field types as needed
       ],
     );
 

@@ -10,15 +10,18 @@ class AppViewModel extends ChangeNotifier {
     loadQuestions();
   }
   String selectedState = "";
+  String selectedBank = "";
+  TextEditingController incomeController = TextEditingController();
 
   bool isLoading = false;
 
-  bool showQuestion = true;
-
-
+  bool showQuestion = false;
 
   List<QuestionField> questionsField = [];
   Map<String, dynamic> userAnswers = {};
+
+  String qKey = "";
+  Object? qValue = "";
 
   int questionLength = 0;
 
@@ -31,7 +34,7 @@ class AppViewModel extends ChangeNotifier {
       final question = questionFromJson(jsonString);
 
       questionsField = question.schema.fields;
-      questionLength = questionsField.length;
+      questionLength = questionsField.length - 1;
       log(questionsField.toString());
       isLoading = false;
       notifyListeners();
@@ -42,27 +45,38 @@ class AppViewModel extends ChangeNotifier {
     }
   }
 
-  void setUserAnswer(Object? value, String questionKey) {
-    if (questionKey == 'typeOFLoan') {
-      if (value != 'balance-transfer-top-up') {
+  void setUserAnswer(/* Object? value, String questionKey */) {
+    if (qKey == 'Type of loan') {
+      if (qValue != 'Balance transfer & Top-up') {
         showQuestion = false;
-        questionLength--;
+        questionLength = 4;
       } else {
         showQuestion = true;
-        questionLength++;
+        questionLength = 5;
       }
-   
     }
 
-    userAnswers[questionKey] = value;
+    userAnswers[qKey] = qValue;
     log(userAnswers.toString());
-    
 
     notifyListeners();
   }
 
-  void setSelection(String newvalue) {
+  void setSelectedState(String newvalue) {
     selectedState = newvalue;
+    log(selectedState);
+    notifyListeners();
+  }
+  void setSelectedBank(String newvalue) {
+    selectedBank = newvalue;
+    log(selectedBank);
+    notifyListeners();
+  }
+
+  String selectedCity = "";
+
+  void setSelectedCity(String city) {
+    selectedCity = city;
     notifyListeners();
   }
 }
