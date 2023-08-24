@@ -16,7 +16,8 @@ class CustomText extends StatelessWidget {
     this.color,
     this.size,
     this.overflow,
-    this.lines,  this.align,
+    this.lines,
+    this.align,
   });
 
   @override

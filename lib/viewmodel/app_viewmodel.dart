@@ -11,6 +11,7 @@ class AppViewModel extends ChangeNotifier {
   }
   String selectedState = "";
   String selectedBank = "";
+  String selectedCity = "";
   TextEditingController incomeController = TextEditingController();
 
   bool isLoading = false;
@@ -67,13 +68,12 @@ class AppViewModel extends ChangeNotifier {
     log(selectedState);
     notifyListeners();
   }
+
   void setSelectedBank(String newvalue) {
     selectedBank = newvalue;
     log(selectedBank);
     notifyListeners();
   }
-
-  String selectedCity = "";
 
   void setSelectedCity(String city) {
     selectedCity = city;

@@ -43,10 +43,8 @@ class FieldWidget extends StatelessWidget {
         model.qValue = '0';
       } else {
         model.qValue = model.userAnswers[fieldData.schema.label];
-        
       }
-        model.incomeController.text = model.qValue.toString();
-
+      model.incomeController.text = model.qValue.toString();
     }
 
     String fieldLabel = fieldData.schema.label;
@@ -63,9 +61,6 @@ class FieldWidget extends StatelessWidget {
             onChanged: (value) {
               model.qValue = value;
             },
-
-            // onFieldSubmitted:(val)=> Provider.of<AppViewModel>(context,listen: false)
-            //     .setUserAnswer(val, fieldData.schema.name),
           )
         else if (fieldData.type == 'Label')
           Padding(
@@ -77,10 +72,7 @@ class FieldWidget extends StatelessWidget {
           )
         else if (fieldData.type == 'SingleSelect')
           DropDownWidget(questionSchema: fieldData.schema)
-        // Handle other field types as needed
       ],
     );
-
-    // Check the field type and display accordingly
   }
 }

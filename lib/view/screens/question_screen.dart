@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:question_app/view/constants/color_constants.dart';
+import 'package:question_app/view/screens/output_screen.dart';
 import 'package:question_app/view/widgets/custom_text.dart';
 import 'package:question_app/view/widgets/dropdown_widget.dart';
 import 'package:question_app/view/widgets/section_widget.dart';
@@ -10,7 +11,7 @@ import 'package:question_app/view/widgets/slide_navigator.dart';
 import 'package:question_app/viewmodel/app_viewmodel.dart';
 import 'package:question_app/viewmodel/navigator_viewmodel.dart';
 
-import '../model/question_model.dart';
+import '../../model/question_model.dart';
 
 class QuestionScreen extends StatelessWidget {
   const QuestionScreen({super.key});
@@ -143,7 +144,7 @@ class QuestionScreen extends StatelessWidget {
                               onPressed: () {
                                 if (navModel.currentPage <
                                     model.questionsField.length - 1) {
-                                  model.setUserAnswer(/* value, questionKey */);
+                                  model.setUserAnswer();
                                   if (model
                                               .questionsField[
                                                   navModel.currentPage + 1]
@@ -155,6 +156,11 @@ class QuestionScreen extends StatelessWidget {
                                   } else {
                                     navModel.moveForward();
                                   }
+                                } else {
+                                  model.setUserAnswer();
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (ctx) => OutputScreen(
+                                          loanDetails: model.userAnswers)));
                                 }
                               },
                               icon: const Icon(Icons.keyboard_arrow_right),
@@ -203,7 +209,7 @@ class SingleChoiceSelector extends StatelessWidget {
               return Container(
                 decoration: BoxDecoration(
                   border: Border.all(
-                      width: 2,
+                      width: 1,
                       color: model.userAnswers[questionKey] == optionKey
                           ? kOrange
                           : kBlack),

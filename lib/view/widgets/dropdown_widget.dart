@@ -39,18 +39,13 @@ class DropDownWidget extends StatelessWidget {
       }
     }
     log(model.selectedBank + model.selectedCity + model.selectedState);
-    // if (model.userAnswers.containsKey(model.qKey)) {
-    //   model.qValue = model.userAnswers[model.qKey];
-    // } else {
-    //   model.qValue = model.selectedState;
-    // }
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomText(text: questionSchema.label ?? "", size: 18),
-        const SizedBox(height: 10),
+        const SizedBox(height: 5),
         DropdownButton<String>(
           value: questionSchema.name == "Property located state"
               ? model.selectedState
@@ -74,7 +69,7 @@ class DropDownWidget extends StatelessWidget {
             model.setUserAnswer();
           },
           underline: Container(),
-          icon: Icon(Icons.keyboard_arrow_down),
+          icon: const Icon(Icons.keyboard_arrow_down),
           items: options.map((state) {
             return DropdownMenuItem<String>(
               value: state.value,
@@ -82,6 +77,7 @@ class DropDownWidget extends StatelessWidget {
             );
           }).toList(),
         ),
+        const SizedBox(height: 10),
       ],
     );
   }
